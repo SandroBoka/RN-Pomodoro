@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type ThemeMode = "light" | "dark";
 
@@ -10,6 +11,7 @@ type SettingsContextValue = {
 };
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
+const SETTINGS_STORAGE_KEY = "pomodoro-settings";
 
 type SettingsProviderProps = {
     children: ReactNode;
@@ -18,6 +20,55 @@ type SettingsProviderProps = {
 export function SettingsProvider({ children }: SettingsProviderProps) {
     const [focusDurationMinutes, setFocusDurationMinutes] = useState(25);
     const [themeMode, setThemeMode] = useState<ThemeMode>("light");
+    const [hasLoadedSettings, setHasLoadedSettings] = useState(false);
+
+    useEffect(() => {
+        async function loadSettings() {
+            try {
+                const storedVaule = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
+
+                if (!storedVaule) { return; }
+
+                const parsed = JSON.parse(storedVaule);
+
+                if (typeof parsed.focusDurationMinutes === "number" && parsed.focusDurationMinutes > 0) {
+                    setFocusDurationMinutes(parsed.focusDurationMinutes);
+                }
+
+                if (parsed.themeMode === "light" || parsed.themeMode === "dark") {
+                    setThemeMode(parsed.themeMode);
+                }
+            } catch (error) {
+                console.warn("Failed to load settings", error);
+            } finally {
+                setHasLoadedSettings(true);
+            }
+        }
+
+        loadSettings();
+    }, []);
+
+    useEffect(() => {
+        if (!hasLoadedSettings) {
+            return;
+        }
+
+        async function saveSettings() {
+            try {
+                await AsyncStorage.setItem(
+                    SETTINGS_STORAGE_KEY,
+                    JSON.stringify({
+                        focusDurationMinutes,
+                        themeMode
+                    })
+                );
+            } catch (error) {
+                console.warn("Failed to save settings", error)
+            }
+        }
+
+        saveSettings();
+    }, [hasLoadedSettings, themeMode, focusDurationMinutes]);
 
     return (
         <SettingsContext.Provider

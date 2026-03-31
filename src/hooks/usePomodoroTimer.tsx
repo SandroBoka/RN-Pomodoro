@@ -16,7 +16,7 @@ export function usePomodoroTimer(focusDurationMinutes: number) {
     let phaseLabel = "Ready";
 
     if (secondsRemaining === 0) {
-        phaseLabel = "Compleated";
+        phaseLabel = "Completed";
     } else if (isRunning) {
         phaseLabel = "Focusing";
     } else if (secondsRemaining < focusDurationMinutes * 60) {

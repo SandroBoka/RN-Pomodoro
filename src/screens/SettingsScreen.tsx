@@ -1,6 +1,6 @@
 import { StyleSheet, Text, Pressable, View, TextInput, Switch, Keyboard, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import { useSettings } from "../context/SettingsContext";
 import { getColors } from "../theme/colors";
@@ -17,6 +17,10 @@ export function SettingsScreen() {
     const [minutesInput, setMinutesInput] = useState(String(focusDurationMinutes));
     const inputRef = useRef<TextInput>(null);
 
+    useEffect(() => {
+        setMinutesInput(String(focusDurationMinutes));
+    }, [focusDurationMinutes]);
+
     function handleSaveDuration() {
         const parsedValue = Number(minutesInput);
 
@@ -25,10 +29,10 @@ export function SettingsScreen() {
         }
 
         setFocusDurationMinutes(parsedValue);
+        setMinutesInput(String(parsedValue));
         inputRef.current?.blur()
         Keyboard.dismiss();
     }
-
 
     return (
         <SafeAreaView
@@ -38,6 +42,7 @@ export function SettingsScreen() {
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
             >
                 <View style={[styles.sectionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>Focus Duration</Text>
