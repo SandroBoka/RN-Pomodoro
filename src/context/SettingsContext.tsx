@@ -6,8 +6,10 @@ type ThemeMode = "light" | "dark";
 type SettingsContextValue = {
     focusDurationMinutes: number;
     themeMode: ThemeMode;
+    timerAlertsEnabled: boolean;
     setFocusDurationMinutes: (value: number) => void;
     setThemeMode: (value: ThemeMode) => void;
+    setTimerAlertsEnabled: (value: boolean) => void;
 };
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
@@ -21,6 +23,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     const [focusDurationMinutes, setFocusDurationMinutes] = useState(25);
     const [themeMode, setThemeMode] = useState<ThemeMode>("light");
     const [hasLoadedSettings, setHasLoadedSettings] = useState(false);
+    const [timerAlertsEnabled, setTimerAlertsEnabled] = useState(false);
 
     useEffect(() => {
         async function loadSettings() {
@@ -37,6 +40,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
                 if (parsed.themeMode === "light" || parsed.themeMode === "dark") {
                     setThemeMode(parsed.themeMode);
+                }
+
+                if (typeof parsed.timerAlertsEnabled === "boolean") {
+                    setTimerAlertsEnabled(parsed.timerAlertsEnabled);
                 }
             } catch (error) {
                 console.warn("Failed to load settings", error);
@@ -59,7 +66,8 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
                     SETTINGS_STORAGE_KEY,
                     JSON.stringify({
                         focusDurationMinutes,
-                        themeMode
+                        themeMode,
+                        timerAlertsEnabled
                     })
                 );
             } catch (error) {
@@ -68,15 +76,17 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         }
 
         saveSettings();
-    }, [hasLoadedSettings, themeMode, focusDurationMinutes]);
+    }, [hasLoadedSettings, themeMode, focusDurationMinutes, timerAlertsEnabled]);
 
     return (
         <SettingsContext.Provider
             value={{
                 focusDurationMinutes,
                 themeMode,
+                timerAlertsEnabled,
                 setFocusDurationMinutes,
-                setThemeMode
+                setThemeMode,
+                setTimerAlertsEnabled
             }}
         >
             {children}

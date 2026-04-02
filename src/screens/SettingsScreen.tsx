@@ -1,16 +1,19 @@
-import { StyleSheet, Text, Pressable, View, TextInput, Switch, Keyboard, ScrollView } from "react-native";
+import { StyleSheet, Text, Pressable, View, TextInput, Switch, Keyboard, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef, useEffect } from "react";
 
 import { useSettings } from "../context/SettingsContext";
 import { getColors } from "../theme/colors";
+import { requestNotificationPermission } from "../services/timerNotifications";
 
 export function SettingsScreen() {
     const {
         focusDurationMinutes,
         themeMode,
+        timerAlertsEnabled,
         setFocusDurationMinutes,
-        setThemeMode
+        setThemeMode,
+        setTimerAlertsEnabled
     } = useSettings();
 
     const colors = getColors(themeMode);
@@ -32,6 +35,27 @@ export function SettingsScreen() {
         setMinutesInput(String(parsedValue));
         inputRef.current?.blur()
         Keyboard.dismiss();
+    }
+
+    async function handleTimerAlertsToggle(nextValue: boolean) {
+        if (!nextValue) {
+            setTimerAlertsEnabled(false);
+            return;
+        }
+
+        const permissionGranted = await requestNotificationPermission();
+
+        if (!permissionGranted) {
+            Alert.alert(
+                "Notifications are off",
+                "Enable notifications for this app in iPhone Settings to use timer alerts"
+            );
+
+            setTimerAlertsEnabled(false);
+            return;
+        }
+
+        setTimerAlertsEnabled(true);
     }
 
     return (
@@ -87,6 +111,24 @@ export function SettingsScreen() {
                         <Switch
                             value={themeMode === "dark"}
                             onValueChange={(isDark) => setThemeMode(isDark ? "dark" : "light")}
+                            trackColor={{ false: "#CFC7BE", true: colors.accent }}
+                            thumbColor="#FFFFFF"
+                        />
+                    </View>
+                </View>
+
+                <View style={[styles.sectionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                    <View style={styles.themeRow}>
+                        <View style={styles.themeTextBlock}>
+                            <Text style={[styles.sectionTitle, { color: colors.text }]}>Timer Alerts</Text>
+                            <Text style={[styles.sectionDescription, { color: colors.mutedText }]}>
+                                Play a sound and show a notification when the timer ends.
+                            </Text>
+                        </View>
+
+                        <Switch
+                            value={timerAlertsEnabled}
+                            onValueChange={(value) => { void handleTimerAlertsToggle(value); }}
                             trackColor={{ false: "#CFC7BE", true: colors.accent }}
                             thumbColor="#FFFFFF"
                         />

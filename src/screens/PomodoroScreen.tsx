@@ -11,8 +11,8 @@ import { RootStackParamList } from "../navigation/RootNavigator";
 import { useSettings } from "../context/SettingsContext";
 
 export function PomodoroScreen() {
-    const { focusDurationMinutes, themeMode } = useSettings();
-    const { formattedTime, isRunning, phaseLabel, toggleRunning, resetTimer } = usePomodoroTimer(focusDurationMinutes);
+    const { focusDurationMinutes, themeMode, timerAlertsEnabled } = useSettings();
+    const { formattedTime, isRunning, phaseLabel, startTimer, pauseTimer, resetTimer } = usePomodoroTimer({ focusDurationMinutes, timerAlertsEnabled });
 
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -45,7 +45,7 @@ export function PomodoroScreen() {
                 <View style={styles.buttonRow}>
                     <Pressable
                         style={[styles.primaryButton, { backgroundColor: colors.accent }]}
-                        onPress={toggleRunning}
+                        onPress={ isRunning ? pauseTimer : startTimer }
                     >
                         <Text style={[styles.primaryButtonText, { color: colors.primaryButtonText }]}>
                             {isRunning ? "Pause" : "Start"}
