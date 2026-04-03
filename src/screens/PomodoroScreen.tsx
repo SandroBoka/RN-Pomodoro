@@ -56,7 +56,6 @@ export function PomodoroScreen() {
             edges={["left", "right"]}
         >
             <ScrollView
-                contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.topBar}>
@@ -119,10 +118,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 12
     },
-    scrollContent: {
-        // paddingVertical: 40,
-        // paddingHorizontal: 24
-    },
     content: {
         flex: 1,
         alignItems: "center",
@@ -176,7 +171,7 @@ const styles = StyleSheet.create({
     topBar: {
         width: "100%",
         alignItems: "flex-end",
-        marginTop: 24
+        marginTop: 30
     },
     iconButton: {
         padding: 8
