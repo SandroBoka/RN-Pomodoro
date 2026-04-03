@@ -11,9 +11,11 @@ export function SettingsScreen() {
         focusDurationMinutes,
         themeMode,
         timerAlertsEnabled,
+        catImagesEnabled,
         setFocusDurationMinutes,
         setThemeMode,
-        setTimerAlertsEnabled
+        setTimerAlertsEnabled,
+        setCatImagesEnabled
     } = useSettings();
 
     const colors = getColors(themeMode);
@@ -61,7 +63,7 @@ export function SettingsScreen() {
     return (
         <SafeAreaView
             style={[styles.container, { backgroundColor: colors.background }]}
-            edges={["left", "right", "bottom"]}
+            edges={["left", "right"]}
         >
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
@@ -129,6 +131,24 @@ export function SettingsScreen() {
                         <Switch
                             value={timerAlertsEnabled}
                             onValueChange={(value) => { void handleTimerAlertsToggle(value); }}
+                            trackColor={{ false: "#CFC7BE", true: colors.accent }}
+                            thumbColor="#FFFFFF"
+                        />
+                    </View>
+                </View>
+
+                <View style={[styles.sectionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                    <View style={styles.themeRow}>
+                        <View style={styles.themeTextBlock}>
+                            <Text style={[styles.sectionTitle, { color: colors.text }]}>Cat Images</Text>
+                            <Text style={[styles.sectionDescription, { color: colors.mutedText }]}>
+                                Show cat cat image when timer finishes to boost moral.
+                            </Text>
+                        </View>
+
+                        <Switch
+                            value={catImagesEnabled}
+                            onValueChange={(value) => { setCatImagesEnabled(value); }}
                             trackColor={{ false: "#CFC7BE", true: colors.accent }}
                             thumbColor="#FFFFFF"
                         />

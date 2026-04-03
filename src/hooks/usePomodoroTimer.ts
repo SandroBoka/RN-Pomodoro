@@ -30,6 +30,7 @@ export function usePomodoroTimer({
     const [secondsRemaining, setSecondsRemaining] = useState(focusDurationMinutes * 60);
     const [isRunning, setIsRunning] = useState(false);
     const [endTimeMs, setEndTimeMs] = useState<number | null >(null);
+    const [completedCount, setCompletedCound] = useState(0);
 
     const scheduledNotificationIdRef = useRef<string | null>(null);
     
@@ -93,6 +94,7 @@ export function usePomodoroTimer({
             if(nextSeconds === 0) {
                 setIsRunning(false);
                 setEndTimeMs(null);
+                setCompletedCound((count) => count + 1);
                 scheduledNotificationIdRef.current = null;
 
                 Vibration.vibrate(TIMER_VIBRATION_PATTERN);
@@ -129,6 +131,7 @@ export function usePomodoroTimer({
         formattedTime,
         isRunning,
         phaseLabel,
+        completedCount,
         startTimer,
         pauseTimer,
         resetTimer

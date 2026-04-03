@@ -7,9 +7,11 @@ type SettingsContextValue = {
     focusDurationMinutes: number;
     themeMode: ThemeMode;
     timerAlertsEnabled: boolean;
+    catImagesEnabled: boolean;
     setFocusDurationMinutes: (value: number) => void;
     setThemeMode: (value: ThemeMode) => void;
     setTimerAlertsEnabled: (value: boolean) => void;
+    setCatImagesEnabled: (value: boolean) => void;
 };
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
@@ -24,6 +26,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     const [themeMode, setThemeMode] = useState<ThemeMode>("light");
     const [hasLoadedSettings, setHasLoadedSettings] = useState(false);
     const [timerAlertsEnabled, setTimerAlertsEnabled] = useState(false);
+    const [catImagesEnabled, setCatImagesEnabled] = useState(false);
 
     useEffect(() => {
         async function loadSettings() {
@@ -44,6 +47,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
                 if (typeof parsed.timerAlertsEnabled === "boolean") {
                     setTimerAlertsEnabled(parsed.timerAlertsEnabled);
+                }
+
+                if (typeof parsed.catImagesEnabled === "boolean") {
+                    setCatImagesEnabled(parsed.catImagesEnabled);
                 }
             } catch (error) {
                 console.warn("Failed to load settings", error);
@@ -67,7 +74,8 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
                     JSON.stringify({
                         focusDurationMinutes,
                         themeMode,
-                        timerAlertsEnabled
+                        timerAlertsEnabled,
+                        catImagesEnabled
                     })
                 );
             } catch (error) {
@@ -76,7 +84,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         }
 
         saveSettings();
-    }, [hasLoadedSettings, themeMode, focusDurationMinutes, timerAlertsEnabled]);
+    }, [hasLoadedSettings, themeMode, focusDurationMinutes, timerAlertsEnabled, catImagesEnabled]);
 
     return (
         <SettingsContext.Provider
@@ -84,9 +92,11 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
                 focusDurationMinutes,
                 themeMode,
                 timerAlertsEnabled,
+                catImagesEnabled,
                 setFocusDurationMinutes,
                 setThemeMode,
-                setTimerAlertsEnabled
+                setTimerAlertsEnabled,
+                setCatImagesEnabled
             }}
         >
             {children}
